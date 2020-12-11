@@ -23,5 +23,5 @@ class Block:
       blockStr = json.dumps(self.__dict__, sort_keys=True)
       return sha256(blockStr.encode()).hexdigest()
 
-block = Block(1, 2, 4)
+block = Block(1, 2, 4, "0")
 print(block.computeHash())
