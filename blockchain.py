@@ -110,8 +110,8 @@ class Blockchain:
          # Reassign attribute to block
          block.objHash = blockHash
          prevHash = blockHash
-
-   return valid
+         
+      return valid
 
 chain = Blockchain()
 chain.createGenesisBlock()

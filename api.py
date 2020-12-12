@@ -11,6 +11,19 @@ app = Flask(__name__)
 # Initialize blockchain object
 blockchain = Blockchain()
 
+@app.route('/')
+def frontPage():
+   return '''
+   <html>
+      <head>
+            <title>Templating in Flask</title>
+        </head>
+        <body>
+            <h1>Hello %s!</h1>
+            <p>Welcome to the world of Flask!</p>
+        </body>
+   </html> ''' %"mayank"
+
 # CENTRALIZED SO FAR
 
 # Endpoint to submit a new unconfirmed transaction to the blockchain
@@ -37,9 +50,15 @@ def getBlockchain():
 @app.route('/mineData', methods=['GET'])
 def mineUnconfirmedTransactions():
    newBlockIndex = blockchain.mineData()
-   if (not newBlockIndex)
+   if (not newBlockIndex):
       return "There are no transactions to mine"
-   return "Block " + str(newBlockIndex) + "has been mined!"
+   else:
+      # Run consensus algorithm, make sure node has longest chain
+      blockchainLen = len(blockchain.chain)
+      consensusAlgorithm() # Update blockchain to longest valid chain if needed
+      if (blockchainLen == len(blockchain.chain)):
+         announceBlock(blockchain.chain[-1]) # CONFUSED: if running consensus(), what if chain is updated and we lose the mined block?
+      return "Block " + str(newBlockIndex) + "has been mined!"
 
 # Endpoint to retrieve all the pending unconfirmed transactions
 @app.route('/pendingTransactions', methods=['GET'])
@@ -116,6 +135,14 @@ def addNewBlock():
    return "Block successfully added", 201 # 201 status code == success and creation of new resource
 
 """
+Announce to all nodes in the network that a block has
+been mined. Adds the block to the chain for each node.
+"""
+def announceBlock(block):
+   for nodeAddress in peers:
+      requests.post(nodeAddress + "/addBlock", data=json.dumps(block.__dict__, sort_keys=True))
+
+"""
 Consensus algorithm to ensure consistency of chain among all nodes
 in the network. Finds the longest valid chain and replaces current
 blockchain with it.
@@ -139,3 +166,7 @@ def consensusAlgorithm():
       blockchain = longestValidChain
       return True
    return False
+
+
+if (__name__ == "__main__"):
+   app.run(debug=True, port=8000)
