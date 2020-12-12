@@ -52,7 +52,7 @@ class Blockchain:
       if (not validBlock(newBlock, hashProof)):
          return False
 
-      newBlock.hash = hashProof
+      newBlock.objHash = hashProof
       self.chain.append(newBlock)
       return True
 
@@ -62,7 +62,7 @@ class Blockchain:
    satisifies the difficulty requirements
    """
    def validBlock(self, block, blockHash):
-      return (blockHash.startsWith('0'*Blockchain.difficulty) and block_hash == block.computeHash())
+      return (blockHash.startsWith('0'*Blockchain.difficulty) and blockHash == block.computeHash())
 
 
    """
