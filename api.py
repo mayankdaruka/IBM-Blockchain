@@ -47,12 +47,10 @@ def getPendingTransactions():
    return json.dumps(blockchain.unconfirmedTransactions)
 
 
-# MAKE NETWORK DECENTRALIZED
-# Transition from a single node to a peer-to-peer network
+# MAKE NETWORK DECENTRALIZED, transition from a single node to a peer-to-peer network
 
 # Contains host addresses of other members in network
 peers = set()
-
 
 # Endpoint to add new peers to network
 @app.route('/registerNewNode', methods=['POST'])
@@ -64,6 +62,7 @@ def registerNewPeers():
    # Return blockchain to new node for sync purposes
    return getBlockchain()
 
+# Endpoint to register a new node with an existing node in the network
 @app.route('/registerWithNode', methods=['POST'])
 def registerWithExistingNode():
    newNodeAddress = request.get_json()['nodeAddress']
@@ -80,7 +79,12 @@ def registerWithExistingNode():
       global blockchain
       global peers
       chainBlockArr = response.json()['chain']
+      peers.update(response.json['peers']) # peers field inside response.json() doesn't exist, so empty right now
       blockchain = createNewBlockchain(chainBlockArr)
+      return "Registered node successfully", 200
+   else:
+      # Let codebase calling API figure it out
+      return response.content, response.status_code
 
 def createNewBlockchain(blockArr):
    blockchain = Blockchain()
@@ -99,3 +103,39 @@ def createNewBlockchain(blockArr):
          blockchain.chain.append(block)
       index += 1
    return blockchain
+
+# Endpoint to add block mined by someone else to current node's chain
+@app.route('/addBlock', methods=['POST'])
+def addNewBlock():
+   blockData = request.get_json()
+   newBlock = Block(blockData['index'], blockData['transactions'], blockData['timestamp'], blockData['prevHash'])
+   hashProof = blockData['objHash']
+   addedBlock = blockchain.addBlock(newBlock, hashProof)
+   if (not addedBlock):
+      return "Block couldn't be added to node's chain", 400
+   return "Block successfully added", 201 # 201 status code == success and creation of new resource
+
+"""
+Consensus algorithm to ensure consistency of chain among all nodes
+in the network. Finds the longest valid chain and replaces current
+blockchain with it.
+"""
+def consensusAlgorithm():
+   global blockchain
+
+   longestValidChain = None
+   currentChainLen = 0
+
+   for nodeAddress in peers:
+      # Get the current node's copy of the blockchain
+      response = request.get(str(nodeAddress) + "/blockchain")
+      chainLen = response.get_json()['length']
+      chain = response.get_json()['chain']
+      if (chainLen > currentChainLen and blockchain.checkValidChain(chain)):
+         currentChainLen = chainLen
+         longestValidChain = chain
+
+   if (longestValidChain):
+      blockchain = longestValidChain
+      return True
+   return False

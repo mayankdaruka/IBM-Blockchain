@@ -8,10 +8,11 @@ class Block:
    timeCreated: time that block was created
    prevHash: the hash of the previous block in the blockchain
    """
-   def __init__(self, blockIndex, transactionList, timeCreated, prevHash):
+   def __init__(self, blockIndex, transactionList, timeCreated, previousHash):
       self.index = blockIndex
       self.transactions = transactionList
       self.timestamp = timeCreated
+      self.prevHash = previousHash
       print(self.__dict__)
 
 

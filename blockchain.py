@@ -52,6 +52,7 @@ class Blockchain:
       if (not validBlock(newBlock, hashProof)):
          return False
 
+      # Adds objHash attribute after hash calculated, so hash doesn't include objHash value
       newBlock.objHash = hashProof
       self.chain.append(newBlock)
       return True
@@ -89,9 +90,28 @@ class Blockchain:
       self.addBlock(newBlock, finalHash)
       # Done adding all pending transactions into a block, so empty list
       self.unconfirmedTransactions = []
-
       return newBlock.index
 
+   """
+   Checks if chain is valid
+   """
+   def checkValidChain(self, chain):
+      valid = True
+      prevHash = "0"
+      
+      for block in chain:
+         blockHash = block.objHash
+         # Delete objHash attribute to compute block's hash
+         delattr(blockHash, 'objHash')
+
+         if (not self.validBlock(block, blockHash) or prevHash != block.prevHash):
+            valid = False
+            break
+         # Reassign attribute to block
+         block.objHash = blockHash
+         prevHash = blockHash
+
+   return valid
 
 chain = Blockchain()
 chain.createGenesisBlock()
