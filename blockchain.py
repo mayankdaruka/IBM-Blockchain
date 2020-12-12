@@ -29,6 +29,15 @@ class Blockchain:
    def proofOfWork(self, block):
       block.nonce = 0
 
+      currHash = block.computeHash()
+
+      # Keep finding value until constraints satisfied
+      while (not currHash.startsWith("0"*Blockchain.difficulty)):
+         block.nonce += 1
+         currHash = block.computeHash()
+
+      return currHash
+
    """
    Adds a block to the blockchain after its validity
    has been verified
@@ -36,6 +45,8 @@ class Blockchain:
    def addBlock(self, newBlock, hashProof):
       lastBlock = self.chain[-1]
       
+      # Checks to make sure hash pointer points to previous block
+      # and satisfies the difficulty criteria
       if (newBlock.prevHash != lastBlock.objHash):
          return False
       if (not validBlock(newBlock, hashProof)):
@@ -51,7 +62,36 @@ class Blockchain:
    satisifies the difficulty requirements
    """
    def validBlock(self, block, blockHash):
-      return (blockHash.startsWith('0'*difficulty) and block_hash == block.computeHash())
+      return (blockHash.startsWith('0'*Blockchain.difficulty) and block_hash == block.computeHash())
+
+
+   """
+   Adds a transaction to a list of pending transactions
+   that haven't been accounted for by the blockchain yet
+   """
+   def addUnconfirmedTransaction(self, newTransaction):
+      self.unconfirmedTransactions.append(newTransaction)
+
+   """
+   Adds pending transactions to a block and adds block to
+   the blockchain if everything is valid
+   """
+   def mineData(self):
+      # No need to mine if nothing to add to blockchain
+      if (not self.unconfirmedTransactions):
+         return False
+
+      lastBlock = self.chain[-1]
+      newBlock = Block(lastBlock.blockIndex + 1, self.unconfirmedTransactions, time.time(), lastBlock.objHash)
+
+      finalHash = self.proofOfWork(newBlock)
+      # Add block to blockchain once mining over (additional checks inside method)
+      self.addBlock(newBlock, finalHash)
+      # Done adding all pending transactions into a block, so empty list
+      self.unconfirmedTransactions = []
+
+      return newBlock.index
+
 
 chain = Blockchain()
 chain.createGenesisBlock()
