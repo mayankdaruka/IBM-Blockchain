@@ -80,6 +80,7 @@ def registerWithExistingNode():
       global blockchain
       global peers
       chainBlockArr = response.json()['chain']
+      blockchain = createNewBlockchain(chainBlockArr)
 
 def createNewBlockchain(blockArr):
    blockchain = Blockchain()
@@ -90,3 +91,11 @@ def createNewBlockchain(blockArr):
       if (index > 0):
          # Verify added block along with difficulty of requirements
          addedBlock = blockchain.addBlock(block)
+         if (not addedBlock):
+            # Block not valid and cannot be added
+            raise Exception("Chain is tampered.")
+      else:
+         # Genesis block, no need for verification
+         blockchain.chain.append(block)
+      index += 1
+   return blockchain
