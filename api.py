@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import requests
 from blockchain import Blockchain
 from block import Block
@@ -13,16 +13,7 @@ blockchain = Blockchain()
 
 @app.route('/')
 def frontPage():
-   return '''
-   <html>
-      <head>
-            <title>Templating in Flask</title>
-        </head>
-        <body>
-            <h1>Hello %s!</h1>
-            <p>Welcome to the world of Flask!</p>
-        </body>
-   </html> ''' %"mayank"
+   return render_template('index.html')
 
 # CENTRALIZED SO FAR
 
@@ -133,6 +124,11 @@ def addNewBlock():
    if (not addedBlock):
       return "Block couldn't be added to node's chain", 400
    return "Block successfully added", 201 # 201 status code == success and creation of new resource
+
+@app.route('/submitPost', methods=['POST'])
+def submitPost():
+   print("submitting post...")
+   return "hi"
 
 """
 Announce to all nodes in the network that a block has

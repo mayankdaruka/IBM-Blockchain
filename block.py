@@ -1,6 +1,15 @@
 from hashlib import sha256
 import json
 
+"""
+Transaction JSON fields:
+{
+   "author" : "name of person who created post",
+   "content" : "content of the post",
+   "timestamp" : "time the post was created"
+}
+"""
+
 class Block:
    """
    blockIndex: unique ID of the block
