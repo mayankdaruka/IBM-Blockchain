@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import requests
 from blockchain import Blockchain
 from block import Block
@@ -128,7 +128,7 @@ def addNewBlock():
 @app.route('/submitPost', methods=['POST'])
 def submitPost():
    print("submitting post...")
-   return "hi"
+   return redirect('/')
 
 """
 Announce to all nodes in the network that a block has
