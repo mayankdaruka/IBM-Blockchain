@@ -1,6 +1,7 @@
 <html>
    <head>
          <title>TXPost</title>
+         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
          <link rel="stylesheet" type="text/css" href="../static/styles/mainpage.css">
       </head>
       <body>
@@ -20,11 +21,11 @@
          </form>
       </div>
       <div class="following_component" style="padding-top: 20px;">
-         <form action="/mineData" method="get">
+         <form action="{{nodeAddr}}/mineData" method="get">
             <button class="button-style"> Request to Mine </button>
         </form>
          <!-- <br/> -->
-        <button class="button-style" style="margin-top: 5px"> Resync </button>
+        <a href='/'><button class="button-style" style="margin-top: 5px"> Resync </button></a>
       </div>
       <div style="margin-top: 20px;">
          <!-- {{ posts }} -->

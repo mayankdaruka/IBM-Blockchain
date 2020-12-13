@@ -11,14 +11,14 @@ app = Flask(__name__)
 
 # Initialize blockchain object
 blockchain = Blockchain()
-# Local copy of list of transations (posts)
+# Local copy of list of transactions (posts)
 posts = []
 
 NODE_ADDR = "http://127.0.0.1:8000"
 
 @app.route('/')
 def frontPage():
-   return render_template('index.html', posts=retrievePosts(), peers=['john', 'jake'])
+   return render_template('index.html', posts=retrievePosts(), nodeAddr=NODE_ADDR)
 
 # CENTRALIZED SO FAR
 
@@ -40,7 +40,7 @@ def getBlockchain():
    blockArr = []
    for block in blockchain.chain:
       blockArr.append(block.__dict__)
-   return json.dumps({ "length": len(blockArr), "chain": blockArr })
+   return json.dumps({ "length": len(blockArr), "chain": blockArr, "peers": list(peers) })
 
 # Endpoint to request the node to mine the pending transaction
 @app.route('/mineData', methods=['GET'])
@@ -54,7 +54,7 @@ def mineUnconfirmedTransactions():
       consensusAlgorithm() # Update blockchain to longest valid chain if needed
       if (blockchainLen == len(blockchain.chain)):
          announceBlock(blockchain.chain[-1]) # CONFUSED: if running consensus(), what if chain is updated and we lose the mined block?
-      return "Block " + str(newBlockIndex) + "has been mined!"
+      return "Block #" + str(newBlockIndex) + " has been mined!"
 
 # Endpoint to retrieve all the pending unconfirmed transactions
 @app.route('/pendingTransactions', methods=['GET'])
@@ -81,6 +81,7 @@ def registerNewPeers():
 @app.route('/registerWithNode', methods=['POST'])
 def registerWithExistingNode():
    newNodeAddress = request.get_json()['nodeAddress']
+   print(request.get_json())
    if (not newNodeAddress):
       return "Invalid data", 400
    
@@ -94,8 +95,9 @@ def registerWithExistingNode():
       global blockchain
       global peers
       chainBlockArr = response.json()['chain']
-      peers.update(response.json()['peers']) # peers field inside response.json() doesn't exist, so empty right now
+      peers.update(set(response.json()['peers'])) # peers field inside response.json() doesn't exist, so empty right now
       blockchain = createNewBlockchain(chainBlockArr)
+      print(chainBlockArr)
       return "Registered node successfully", 200
    else:
       # Let codebase calling API figure it out
@@ -104,10 +106,12 @@ def registerWithExistingNode():
 def createNewBlockchain(blockArr):
    blockchain = Blockchain()
    index = 0
+   print("BLOCKK DATAA")
    for blockData in blockArr:
       block = Block(blockData['index'], blockData['transactions'], blockData['timestamp'], blockData['prevHash'])
-      hashProof = blockData['objHash']
       if (index > 0):
+         hashProof = blockData['objHash']
+         block.nonce = blockData['nonce']
          # Verify added block along with difficulty of requirements
          addedBlock = blockchain.addBlock(block, hashProof)
          if (not addedBlock):
@@ -115,7 +119,12 @@ def createNewBlockchain(blockArr):
             raise Exception("Chain is tampered.")
       else:
          # Genesis block, no need for verification
+         blockchain.chain = []
+         # print("this is the genesis block")
+         # print(blockData)
+         block.objHash = blockData['objHash']
          blockchain.chain.append(block)
+         
       index += 1
    return blockchain
 
