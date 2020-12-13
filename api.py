@@ -4,6 +4,7 @@ from blockchain import Blockchain
 from block import Block
 import time
 import json
+from datetime import datetime
 
 # Initialize flask application interface
 app = Flask(__name__)
@@ -17,7 +18,7 @@ NODE_ADDR = "http://127.0.0.1:8000"
 
 @app.route('/')
 def frontPage():
-   return render_template('index.html', posts=posts, peers=['john', 'jake'])
+   return render_template('index.html', posts=retrievePosts(), peers=['john', 'jake'])
 
 # CENTRALIZED SO FAR
 
@@ -188,11 +189,12 @@ def retrievePosts():
       blocksArr = response.json()['chain']
       for block in blocksArr:
          for transaction in block['transactions']:
+            transaction['time'] = datetime.fromtimestamp(transaction['timestamp']).strftime('%I:%M%p, on %m/%d/%Y') 
             transactionList.append(transaction)
    
    global posts
    posts = sorted(transactionList, key=lambda tx: tx['timestamp'], reverse=True)
-   return "Success"
+   return posts
 
 # retrievePosts()
 
