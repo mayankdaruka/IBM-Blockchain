@@ -1,0 +1,16 @@
+.button-style {
+   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+   height: 40px; 
+   width: 90px; 
+   font-size: 15px; 
+   background-color: rgb(20, 255, 161); 
+   outline: 1px;
+}
+
+input {
+   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.author-input {
+   margin-right: 30px;
+}

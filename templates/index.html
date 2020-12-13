@@ -1,6 +1,7 @@
 <html>
    <head>
          <title>YonxPost</title>
+         <link rel="stylesheet" type="text/css" href="../static/styles/mainpage.css">
       </head>
       <body>
          <div style="height: 50px; width: 100%; background-color: rgb(20, 255, 161); font-size: 30px; padding-top: 10px; padding-left: 10px; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
@@ -9,10 +10,24 @@
          <div style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; padding-top: 20px; font-size: 20px; padding-bottom: 5px;">Welcome to YonxPost! Post your thoughts here anytime :)</div>
          <div style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 12px; padding-bottom: 20px;">You can keep your identity anonymous if you choose to. You can post anything you like. Once posted, your content will be immutable and permanent!</div>
       </body>
-
-      <form action='/submitPost' method="post">
-         <input type="text" name="author" placeholder="Enter your name here" required>
-         <input type="text" name="content" placeholder="Type your post here" required>
-         <input type="submit" name="postContent">
-      </form>
+      <button class="button-style" onclick="toggle_display()"> Make a Post </button>
+      <div class="form_section" style="visibility: hidden; padding-top: 20px; display: none;">
+         <form action='/submitPost' method="post">
+            <textarea name="author" placeholder="Enter your name here" required rows="2" cols="20" style="margin-bottom: 20px; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></textarea> <br/>
+            <textarea type="text" name="content" placeholder="Type your post here" required rows="10" cols="40" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; margin-bottom: 20px;"></textarea> <br/>
+            <input type="submit" name="postContent" class="button-style">
+         </form>
+      </div>
+      <div class="following_component" style="padding-top: 20px;">
+         Testing
+      </div>
+      <script>
+         function toggle_display() {
+            formElement = document.querySelector('.form_section');
+            formElement.style.visibility = 'visible'
+            formElement.style.display = 'block'
+            followingComp = document.querySelector('.following_component')
+            followingComp.style.paddingTop = '0px'
+         }
+      </script>
 </html>
