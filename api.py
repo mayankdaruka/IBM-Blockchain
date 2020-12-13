@@ -17,7 +17,7 @@ NODE_ADDR = "http://127.0.0.1:8000"
 
 @app.route('/')
 def frontPage():
-   return render_template('index.html')
+   return render_template('index.html', posts=posts, peers=['john', 'jake'])
 
 # CENTRALIZED SO FAR
 
@@ -184,7 +184,6 @@ def consensusAlgorithm():
 def retrievePosts():
    response = requests.get(NODE_ADDR + "/blockchain")
    transactionList = []
-   # print(response.json())
    if (response.status_code == 200):
       blocksArr = response.json()['chain']
       for block in blocksArr:
@@ -193,10 +192,11 @@ def retrievePosts():
    
    global posts
    posts = sorted(transactionList, key=lambda tx: tx['timestamp'], reverse=True)
-   print("tessting")
-   return "test"
+   return "Success"
 
 # retrievePosts()
 
 if (__name__ == "__main__"):
+   for block in blockchain.chain:
+      print(block.__dict__)
    app.run(debug=True, port=8000)

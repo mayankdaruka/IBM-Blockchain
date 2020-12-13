@@ -22,8 +22,6 @@ class Block:
       self.transactions = transactionList
       self.timestamp = timeCreated
       self.prevHash = previousHash
-      print(self.__dict__)
-
 
    """
    Return hash of this block (SHA-256)

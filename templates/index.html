@@ -20,7 +20,19 @@
          </form>
       </div>
       <div class="following_component" style="padding-top: 20px;">
-        <button class="button-style"> Request to Mine </button>
+         <form action="/mineData" method="get">
+            <button class="button-style"> Request to Mine </button>
+        </form>
+         <br/>
+        <button class="button-style" style="margin-top: 20px;"> Resync </button>
+      </div>
+      <div>
+         {{ posts }}
+         {% for post in posts %}
+         <div>
+            {{ post['content'] }}
+         </div>
+         {% endfor %}
       </div>
       <script>
          function toggle_display() {

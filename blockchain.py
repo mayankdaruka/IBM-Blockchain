@@ -32,7 +32,7 @@ class Blockchain:
       currHash = block.computeHash()
 
       # Keep finding value until constraints satisfied
-      while (not currHash.startsWith("0"*Blockchain.difficulty)):
+      while (not currHash.startswith("0"*Blockchain.difficulty)):
          block.nonce += 1
          currHash = block.computeHash()
 
@@ -49,7 +49,7 @@ class Blockchain:
       # and satisfies the difficulty criteria
       if (newBlock.prevHash != lastBlock.objHash):
          return False
-      if (not validBlock(newBlock, hashProof)):
+      if (not self.validBlock(newBlock, hashProof)):
          return False
 
       # Adds objHash attribute after hash calculated, so hash doesn't include objHash value
@@ -63,7 +63,7 @@ class Blockchain:
    satisifies the difficulty requirements
    """
    def validBlock(self, block, blockHash):
-      return (blockHash.startsWith('0'*Blockchain.difficulty) and blockHash == block.computeHash())
+      return (blockHash.startswith('0'*Blockchain.difficulty) and blockHash == block.computeHash())
 
 
    """
@@ -83,7 +83,7 @@ class Blockchain:
          return False
 
       lastBlock = self.chain[-1]
-      newBlock = Block(lastBlock.blockIndex + 1, self.unconfirmedTransactions, time.time(), lastBlock.objHash)
+      newBlock = Block(lastBlock.index + 1, self.unconfirmedTransactions, time.time(), lastBlock.objHash)
 
       finalHash = self.proofOfWork(newBlock)
       # Add block to blockchain once mining over (additional checks inside method)
