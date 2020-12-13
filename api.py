@@ -10,6 +10,10 @@ app = Flask(__name__)
 
 # Initialize blockchain object
 blockchain = Blockchain()
+# Local copy of list of transations (posts)
+posts = []
+
+NODE_ADDR = "http://127.0.0.1:8000"
 
 @app.route('/')
 def frontPage():
@@ -89,7 +93,7 @@ def registerWithExistingNode():
       global blockchain
       global peers
       chainBlockArr = response.json()['chain']
-      peers.update(response.json['peers']) # peers field inside response.json() doesn't exist, so empty right now
+      peers.update(response.json()['peers']) # peers field inside response.json() doesn't exist, so empty right now
       blockchain = createNewBlockchain(chainBlockArr)
       return "Registered node successfully", 200
    else:
@@ -104,7 +108,7 @@ def createNewBlockchain(blockArr):
       hashProof = blockData['objHash']
       if (index > 0):
          # Verify added block along with difficulty of requirements
-         addedBlock = blockchain.addBlock(block)
+         addedBlock = blockchain.addBlock(block, hashProof)
          if (not addedBlock):
             # Block not valid and cannot be added
             raise Exception("Chain is tampered.")
@@ -128,6 +132,20 @@ def addNewBlock():
 @app.route('/submitPost', methods=['POST'])
 def submitPost():
    print("submitting post...")
+   # retrievePosts()
+   author = request.form['author']
+   content = request.form['content']
+
+   # Don't worry about timestamp - will be added in newTransactions API POST call
+   transactionObj = {
+      'author': author,
+      'content': content
+   }
+   headers = {
+      'Content-Type': 'application/json'
+   }
+
+   requests.post(NODE_ADDR + '/newTransactions', data=json.dumps(transactionObj), headers=headers)
    return redirect('/')
 
 """
@@ -151,9 +169,9 @@ def consensusAlgorithm():
 
    for nodeAddress in peers:
       # Get the current node's copy of the blockchain
-      response = request.get(str(nodeAddress) + "/blockchain")
-      chainLen = response.get_json()['length']
-      chain = response.get_json()['chain']
+      response = requests.get(str(nodeAddress) + "/blockchain")
+      chainLen = response.json()['length']
+      chain = response.json()['chain']
       if (chainLen > currentChainLen and blockchain.checkValidChain(chain)):
          currentChainLen = chainLen
          longestValidChain = chain
@@ -163,6 +181,22 @@ def consensusAlgorithm():
       return True
    return False
 
+def retrievePosts():
+   response = requests.get(NODE_ADDR + "/blockchain")
+   transactionList = []
+   # print(response.json())
+   if (response.status_code == 200):
+      blocksArr = response.json()['chain']
+      for block in blocksArr:
+         for transaction in block['transactions']:
+            transactionList.append(transaction)
+   
+   global posts
+   posts = sorted(transactionList, key=lambda tx: tx['timestamp'], reverse=True)
+   print("tessting")
+   return "test"
+
+# retrievePosts()
 
 if (__name__ == "__main__"):
    app.run(debug=True, port=8000)

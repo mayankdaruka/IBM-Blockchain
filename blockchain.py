@@ -113,5 +113,5 @@ class Blockchain:
          
       return valid
 
-chain = Blockchain()
-chain.createGenesisBlock()
+# chain = Blockchain()
+# chain.createGenesisBlock()
