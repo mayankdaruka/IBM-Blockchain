@@ -1,5 +1,6 @@
 import time
 from block import Block
+from signature import signHashedTransaction
 
 class Blockchain:
    # difficult of the Proof of Work algorithm (number of zeroes)
@@ -52,7 +53,9 @@ class Blockchain:
       if (not self.validBlock(newBlock, hashProof)):
          return False
 
-      # Adds objHash attribute after hash calculated, so hash doesn't include objHash value
+      # Adds digital signature of transaction to object after hash calculated
+      newBlock.signature = signHashedTransaction(newBlock.getHashObj())[0]
+      # Adds objHash attribute after hash and signature calculated, so hash doesn't include objHash and signature values
       newBlock.objHash = hashProof
       self.chain.append(newBlock)
       return True

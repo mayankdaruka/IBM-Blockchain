@@ -1,5 +1,6 @@
 from hashlib import sha256
 import json
+from Crypto.Hash import SHA256
 
 """
 Transaction JSON fields:
@@ -29,4 +30,13 @@ class Block:
    def computeHash(self):
       # Convert dictionary holding block properties into string
       blockStr = json.dumps(self.__dict__, sort_keys=True)
-      return sha256(blockStr.encode()).hexdigest()
+      # print(sha256(blockStr.encode()).hexdigest())
+      # print(SHA256.new(blockStr.encode()).hexdigest())
+      return SHA256.new(blockStr.encode()).hexdigest()
+
+   def getHashObj(self):
+      blockStr = json.dumps(self.__dict__, sort_keys=True)
+      return SHA256.new(blockStr.encode())
+
+block=Block(0, [], 343, "0")
+block.computeHash()
