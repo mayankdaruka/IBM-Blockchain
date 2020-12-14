@@ -1,14 +1,13 @@
 from Crypto.PublicKey import RSA
-from Crypto.PublicKey import ECC
 
-key = RSA.generate(1024)
+key = RSA.generate(bits=1024)
 privateKey = key.export_key('PEM')
 publicKey = key.publickey().export_key('PEM')
 
-print("private key")
-print(privateKey)
-print("public key")
-print(publicKey)
+# print("private key")
+# print(privateKey)
+# print("public key")
+# print(publicKey)
 
 writeKey = open("private.pem", "wb")
 writeKey.write(privateKey)
