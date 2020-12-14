@@ -5,6 +5,8 @@ from block import Block
 import time
 import json
 from datetime import datetime
+from signature import signHashedTransaction
+from Crypto.Hash import SHA256
 
 # Initialize flask application interface
 app = Flask(__name__)
@@ -30,6 +32,7 @@ def newTransaction():
       return "Invalid transaction data", 404
    
    transactionData["timestamp"] = time.time()
+   transactionData["signature"] = signHashedTransaction(SHA256.new(json.dumps(transactionData).encode()))
    blockchain.addUnconfirmedTransaction(transactionData)
 
    return "Success", 201

@@ -17,17 +17,18 @@ def signHashedTransaction(hashedTransaction):
    signer = PKCS115_SigScheme(key)
    signature = signer.sign(hashedTransaction)
    # return tuple for signature
-   return (binascii.hexlify(signature).decode('utf-8'), signature)
+   return binascii.hexlify(signature).decode('utf-8')
 
-def verifyPost(hashedTransaction, signature, publicKey):
+def verifyPost(hashedTransaction, signature):
    # verifier = DSS.new(publicKey, 'fips-186-3')
    verifier = PKCS115_SigScheme(publicKey)
    try:
       verifier.verify(hashedTransaction, signature)
       print("The post is authentic")
+      return True
    except ValueError:
       print("The post is NOT authentic")
+      return False
 
-signature = signHashedTransaction(block.getHashObj())[1]
-print(signature)
-verifyPost(block.getHashObj(), signature, publicKey)
+signature = signHashedTransaction(block.getHashObj())
+print(verifyPost(block.getHashObj(), binascii.unhexlify(signature.encode('utf-8'))))

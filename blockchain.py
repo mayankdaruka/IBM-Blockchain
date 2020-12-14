@@ -1,6 +1,9 @@
 import time
 from block import Block
-from signature import signHashedTransaction
+from signature import signHashedTransaction, verifyPost
+import binascii
+import json
+from Crypto.Hash import SHA256
 
 class Blockchain:
    # difficult of the Proof of Work algorithm (number of zeroes)
@@ -53,8 +56,8 @@ class Blockchain:
       if (not self.validBlock(newBlock, hashProof)):
          return False
 
-      # Adds digital signature of transaction to object after hash calculated
-      newBlock.signature = signHashedTransaction(newBlock.getHashObj())[0]
+      # # Adds digital signature of transaction to object after hash calculated
+      # newBlock.signature = signHashedTransaction(newBlock.getHashObj())
       # Adds objHash attribute after hash and signature calculated, so hash doesn't include objHash and signature values
       newBlock.objHash = hashProof
       self.chain.append(newBlock)
@@ -85,8 +88,17 @@ class Blockchain:
       if (not self.unconfirmedTransactions):
          return False
 
+      finalTransactions = []
+      for transaction in self.unconfirmedTransactions:
+         signature = transaction['signature']
+         del transaction['signature']
+         if (verifyPost(SHA256.new(json.dumps(transaction).encode()), binascii.unhexlify(signature.encode('utf-8')))):
+            finalTransactions.append(transaction)
+         else:
+            print("TRANSACTION NOT VALID")
+
       lastBlock = self.chain[-1]
-      newBlock = Block(lastBlock.index + 1, self.unconfirmedTransactions, time.time(), lastBlock.objHash)
+      newBlock = Block(lastBlock.index + 1, finalTransactions, time.time(), lastBlock.objHash)
 
       finalHash = self.proofOfWork(newBlock)
       # Add block to blockchain once mining over (additional checks inside method)
